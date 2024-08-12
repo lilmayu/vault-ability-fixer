@@ -18,6 +18,7 @@ This does:
 5. Open CMD
 6. Run `java -jar vault-ability-fixer-1.0-SNAPSHOT-all.jar the_vault_PlayerAbilities.dat the_vault_PlayerTalents.dat the_vault_PlayerVaultLevels.dat`
     - Note the order of the files, first abilities, second talents, third vault levels
+    - **You will need at least Java 17**
 7. It will check if it can find the files
 8. Type 'yes'
 9. It will analyze and fix the files IN MEMORY (not yet written to the filesystem)
