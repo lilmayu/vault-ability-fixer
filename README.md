@@ -15,7 +15,7 @@ This does:
     - `the_vault_PlayerTalents.dat`
     - `the_vault_PlayerVaultLevels.dat`
 4. **MAKE A BACKUP OF THOSE FILES**
-5. Open CMD
+5. Open CMD in the directory
 6. Run `java -jar vault-ability-fixer-1.0-SNAPSHOT-all.jar the_vault_PlayerAbilities.dat the_vault_PlayerTalents.dat the_vault_PlayerVaultLevels.dat`
     - Note the order of the files, first abilities, second talents, third vault levels
     - **You will need at least Java 17**
