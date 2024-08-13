@@ -10,14 +10,15 @@ This does:
 ## Usage
 1. Download JAR in the downloads sections (or compile from source, `gradlew shadowJar`)
 2. Stop the server
-3. Download three files from the server and place them in the same directory as the JAR
+3. Download four files from the server and place them in the same directory as the JAR
     - `the_vault_PlayerAbilities.dat`
     - `the_vault_PlayerTalents.dat`
     - `the_vault_PlayerVaultLevels.dat`
+    - `the_vault_QuestStates.dat`
 4. **MAKE A BACKUP OF THOSE FILES**
-5. Open CMD in the directory
-6. Run `java -jar vault-ability-fixer-1.0-SNAPSHOT-all.jar the_vault_PlayerAbilities.dat the_vault_PlayerTalents.dat the_vault_PlayerVaultLevels.dat`
-    - Note the order of the files, first abilities, second talents, third vault levels
+5. Open CMD/Terminal in the directory
+6. Run `java -jar vault-ability-fixer-1.1-all.jar the_vault_PlayerAbilities.dat the_vault_PlayerTalents.dat the_vault_PlayerVaultLevels.dat the_vault_QuestStates.dat`
+    - Note the order of the files, first abilities, second talents, third vault levels, fourth quest states
     - **You will need at least Java 17**
 7. It will check if it can find the files
 8. Type 'yes'

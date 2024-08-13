@@ -61,7 +61,7 @@ public class VaultPlayer {
         }
 
         if (levelsFileIndex == -1) {
-            LOGGER.error("This should not happen.");
+            LOGGER.warn("Player {} is not in the levels file", playerUuid);
             return false;
         }
 
@@ -92,7 +92,7 @@ public class VaultPlayer {
         }
 
         if (abilityFileIndex == -1) {
-            LOGGER.error("This should not happen.");
+            LOGGER.warn("Player {} is not in the ability file", playerUuid);
             return;
         }
 
@@ -106,7 +106,7 @@ public class VaultPlayer {
         }
 
         if (talentFileIndex == -1) {
-            LOGGER.error("This should not happen.");
+            LOGGER.warn("Player {} is not in the talent file", playerUuid);
             return;
         }
 
@@ -207,10 +207,21 @@ public class VaultPlayer {
 
     public void deleteHunterAbility(CompoundTag abilitiesFile) {
         LOGGER.info("> Fixing hunter ability for player {}", playerUuid);
+
+        if (abilityFileIndex == -1 || talentFileIndex == -1) {
+            LOGGER.warn("- Indexes not loaded for this player, cannot fix hunter ability.");
+            return;
+        }
+
         CompoundTag abilityData = abilitiesFile.getCompoundTag("data");
         ListTag<CompoundTag> abilities = abilityData.getListTag("Abilities").asCompoundTagList();
 
         LOGGER.info("- Reading player's abilities...");
+
+        if (abilityFileIndex == -1) {
+            LOGGER.error("This should not happen.");
+            return;
+        }
 
         CompoundTag playerAbilities = abilities.get(abilityFileIndex);
         ListTag<CompoundTag> skills = playerAbilities.getListTag("skills").asCompoundTagList();
@@ -241,6 +252,12 @@ public class VaultPlayer {
 
     public void deleteSpeedTalent(CompoundTag talentsFile) {
         LOGGER.info("> Fixing speed talent for player {}", playerUuid);
+
+        if (abilityFileIndex == -1 || talentFileIndex == -1) {
+            LOGGER.warn("- Indexes not loaded for this player, cannot fix speed talent.");
+            return;
+        }
+
         CompoundTag talentData = talentsFile.getCompoundTag("data");
         ListTag<CompoundTag> talents = talentData.getListTag("Talents").asCompoundTagList();
 
@@ -273,9 +290,48 @@ public class VaultPlayer {
         talentSkills.remove(speedIndex);
     }
 
-    public void giveAbilityPoints(CompoundTag levelsFile) {
-        int pointsToGive = vaultLevel - spentSkillPointsWithoutHunter - unspentSkillPoints;
+    public void giveAbilityPoints(CompoundTag levelsFile, CompoundTag questsFile) {
+        if (abilityFileIndex == -1 || talentFileIndex == -1) {
+            LOGGER.warn("- Indexes not loaded for player {}, cannot give ability points.", playerUuid);
+            return;
+        }
+
+        LOGGER.info("- Checking if player has completed learning_skills quest...");
+        int extraSkillPoint = 0;
+
+        CompoundTag questData = questsFile.getCompoundTag("data");
+        CompoundTag playerQuests = questData.getCompoundTag(playerUuid);
+
+        if (playerQuests != null) {
+            ListTag<StringTag> completedQuests = playerQuests.getListTag("Completed").asStringTagList();
+
+            for (int i = 0; i < completedQuests.size(); i++) {
+                StringTag quest = completedQuests.get(i);
+
+                if (quest.getValue().equals("learning_skills")) {
+                    LOGGER.info("-- Player has completed learning_skills quest, adding them 1 skill point.");
+                    extraSkillPoint = 1;
+                    break;
+                }
+            }
+        } else {
+            LOGGER.warn("-- Player has no quests data, cannot check if they have completed learning_skills quest.");
+        }
+
+        int pointsToGive = vaultLevel - spentSkillPointsWithoutHunter - unspentSkillPoints + extraSkillPoint;
+
+        if (pointsToGive < 0) {
+            LOGGER.warn("- Player {} has more spent points than their vault level, nothing to do.", playerUuid);
+            return;
+        }
+
         int newUnspentSkillPoints = unspentSkillPoints + pointsToGive;
+
+        if (newUnspentSkillPoints < 0) {
+            LOGGER.warn("- Player {} has negative unspent skill points!", playerUuid);
+            return;
+        }
+
         LOGGER.info("> Giving {} ability points to player {} - they will have {} points", pointsToGive, playerUuid, newUnspentSkillPoints);
 
         if (levelsFileIndex == -1) {
